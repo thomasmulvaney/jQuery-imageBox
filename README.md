@@ -9,7 +9,9 @@ jQuery plugin.
 ## Usage
 
 ```javascript
-$('#box').imageBox(options)
+var options = {};
+$('#box').imageBox(options);
+$('#box').imageBox('setImg', 'http://foo.com/bar.png');
 ```
 
 ## Options
