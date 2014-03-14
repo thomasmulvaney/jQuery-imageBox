@@ -1,13 +1,13 @@
 #
 # imageBox, a plugin for jQuery
-# Instructions: https://github.com/wavejumper/jQuery-imageBox 
+# Instructions: https://github.com/wavejumper/jQuery-imageBox
 # By: Thomas Crowley
 # Updated: March 14, 2014
 #
 
 ((window) ->
   $.fn.extend 'imageBox': (option, args) ->
-    funk = ($e) -> 
+    funk = ($e) ->
       data = $e.data('imageBox')
       if !data
         $e.data 'imageBox', (data = new ImageBox($e, option))
@@ -18,7 +18,7 @@
     if @length is 1
       # so we can return the result of the function
       # if there is just one element
-      funk $(this) 
+      funk $(this)
     else
       @each ->
         funk $(this)
@@ -58,12 +58,12 @@
 
       # Move the image on mousedown drag
       @$image.on 'mousedown', (e) ->
-        curX = e.pageX - self._backgroundPosition()[0] 
-        curY = e.pageY - self._backgroundPosition()[1] 
+        curX = e.pageX - self._backgroundPosition()[0]
+        curY = e.pageY - self._backgroundPosition()[1]
 
         handler = (e) ->
           unless e.type is 'mouseup'
-            x = Math.ceil(e.pageX - curX) 
+            x = Math.ceil(e.pageX - curX)
             y = Math.ceil(e.pageY - curY)
             $(this).css('background-position', "#{x}px #{y}px")
           else
@@ -74,16 +74,16 @@
 
         self.$image.on 'mouseup mousemove', handler
         self.$image.on 'mouseleave', destroy
-      
+
     constructor: (@element, options) ->
       options = options or {}
-      # Setup options 
-      @stretchToCanvas = options.stretchToCanvas or true 
+      # Setup options
+      @stretchToCanvas = options.stretchToCanvas or true
       @stockHeight = @element.height()
       @stockWidth  = @element.width()
 
       # Initialize image to dom
-      @image = document.createElement('div') 
+      @image = document.createElement('div')
       @$image = $(@image)
       @element.append(@image)
       @clearImage()
@@ -114,23 +114,24 @@
       eWidth = @element.width()
       eHeight = @element.height()
 
-      if width <= eWidth and @stretchToCanvas
-        w = eWidth
-      else
-        w = width
-
-      if height <= eHeight and @stretchToCanvas
-        h = eHeight
-      else
-        h = height
+      if @stretchToCanvas
+        # Given the dimensions of the canvas, if the image is
+        # smaller than either or both dimensions we need to scale
+        # it so it fits both.
+        wRatio = width/eWidth
+        hRatio = height/eHeight
+        minRatio = Math.min wRatio, hRatio
+        scaleFactor = 1.0 / minRatio
+        w = width * scaleFactor
+        h = height * scaleFactor
 
       @$image.css('background-size', "#{w}px  #{h}px")
 
     # Gets the X1, Y1, X2, Y2 co-ords
     # This is garbage right now :(
     getXY: ->
-      imageX = @_backgroundPosition()[0] 
-      imageY = @_backgroundPosition()[1] 
+      imageX = @_backgroundPosition()[0]
+      imageY = @_backgroundPosition()[1]
       elemH = @element.height()
       elemW = @element.width()
 
@@ -139,8 +140,8 @@
         "H":  @_backgroundSize()[1]
         "X1": (-1 * imageX)
         "X2": (elemW + imageX)
-        "Y1": (-1 * imageX) 
-        "Y2": (elemH + imageY) 
+        "Y1": (-1 * imageX)
+        "Y2": (elemH + imageY)
 
     # Clears the current image from canvas
     clearImage: ->
