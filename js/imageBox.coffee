@@ -49,7 +49,7 @@
 
         w = self._backgroundSize()[0] * scaling
         h = self._backgroundSize()[1] * scaling
-        $(this).css('background-size', "#{w}px #{h}px")
+        self.resize(h, w)
 
       # Reset image position/size on double click
       @$image.on 'dblclick', (e) ->

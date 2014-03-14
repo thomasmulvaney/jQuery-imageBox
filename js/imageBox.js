@@ -61,7 +61,7 @@
           }
           w = self._backgroundSize()[0] * scaling;
           h = self._backgroundSize()[1] * scaling;
-          return $(this).css('background-size', "" + w + "px " + h + "px");
+          return self.resize(h, w);
         });
         this.$image.on('dblclick', function(e) {
           self.$image.css('background-position', '0px 0px');
