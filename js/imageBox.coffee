@@ -111,21 +111,20 @@
 
     # Resize the image
     resize: (height, width) ->
-      eWidth = @element.width()
-      eHeight = @element.height()
-
       if @stretchToCanvas
         # Given the dimensions of the canvas, if the image is
         # smaller than either or both dimensions we need to scale
         # it so it fits both.
+        eWidth = @element.width()
+        eHeight = @element.height()
         wRatio = width/eWidth
         hRatio = height/eHeight
         minRatio = Math.min wRatio, hRatio
         scaleFactor = 1.0 / minRatio
-        w = width * scaleFactor
-        h = height * scaleFactor
+        width = width * scaleFactor
+        height = height * scaleFactor
 
-      @$image.css('background-size', "#{w}px  #{h}px")
+      @$image.css('background-size', "#{width}px  #{height}px")
 
     # Gets the X1, Y1, X2, Y2 co-ords
     # This is garbage right now :(

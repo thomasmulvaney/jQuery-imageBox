@@ -118,20 +118,18 @@
       };
 
       ImageBox.prototype.resize = function(height, width) {
-        var eHeight, eWidth, h, w;
-        eWidth = this.element.width();
-        eHeight = this.element.height();
-        if (width <= eWidth && this.stretchToCanvas) {
-          w = eWidth;
-        } else {
-          w = width;
+        var eHeight, eWidth, hRatio, minRatio, scaleFactor, wRatio;
+        if (this.stretchToCanvas) {
+          eWidth = this.element.width();
+          eHeight = this.element.height();
+          wRatio = width / eWidth;
+          hRatio = height / eHeight;
+          minRatio = Math.min(wRatio, hRatio);
+          scaleFactor = 1.0 / minRatio;
+          width = width * scaleFactor;
+          height = height * scaleFactor;
         }
-        if (height <= eHeight && this.stretchToCanvas) {
-          h = eHeight;
-        } else {
-          h = height;
-        }
-        return this.$image.css('background-size', "" + w + "px  " + h + "px");
+        return this.$image.css('background-size', "" + width + "px  " + height + "px");
       };
 
       ImageBox.prototype.getXY = function() {
