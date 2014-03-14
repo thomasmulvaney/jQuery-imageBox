@@ -35,6 +35,16 @@
       bp = @$image.css('background-position').split(' ')
       (Number(e.replace('px','')) for e in bp)
 
+    _withinBoundsN: (imageN, elemN, pos) ->
+      maxMove = elemN - imageN
+      if pos >= 0
+        n = 0
+      else if pos <= maxMove
+        n = maxMove
+      else
+        n = pos
+
+
     _events: ->
       self = this
 
@@ -56,15 +66,28 @@
         self.$image.css('background-position', '0px 0px')
         self.resize(self.stockHeight, self.stockWidth)
 
+      withinBoundsX = (x) ->
+        imgWidth  = self._backgroundSize()[0]
+        eWidth = self.element.width()
+        n = self._withinBoundsN imgWidth, eWidth, x
+        console.log "BoundsX #{x} -> #{n} : Size #{imgWidth} Elm #{eWidth}"
+        n
+
+      withinBoundsY = (y) ->
+        imgHeight  = self._backgroundSize()[1]
+        eHeight = self.element.height()
+        n = self._withinBoundsN imgHeight, eHeight, y
+        console.log "BoundsY #{y} -> #{n} : Img #{imgHeight} Elm #{eHeight}"
+        n
+
       # Move the image on mousedown drag
       @$image.on 'mousedown', (e) ->
         curX = e.pageX - self._backgroundPosition()[0]
         curY = e.pageY - self._backgroundPosition()[1]
-
         handler = (e) ->
           unless e.type is 'mouseup'
-            x = Math.ceil(e.pageX - curX)
-            y = Math.ceil(e.pageY - curY)
+            x = Math.ceil withinBoundsX e.pageX - curX
+            y = Math.ceil withinBoundsY e.pageY - curY
             $(this).css('background-position', "#{x}px #{y}px")
           else
             destroy()
@@ -113,7 +136,6 @@
     resize: (height, width) ->
       eWidth = @element.width()
       eHeight = @element.height()
-
       if @stretchToCanvas
         # Given the dimensions of the canvas, if the image is
         # smaller than either or both dimensions we need to scale
