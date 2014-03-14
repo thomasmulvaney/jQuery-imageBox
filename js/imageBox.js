@@ -26,20 +26,41 @@
       }
     });
     return ImageBox = (function() {
+      ImageBox.prototype._backgroundSize = function() {
+        var bs, e, _i, _len, _results;
+        bs = this.$image.css('background-size').split(' ');
+        _results = [];
+        for (_i = 0, _len = bs.length; _i < _len; _i++) {
+          e = bs[_i];
+          _results.push(Number(e.replace('px', '')));
+        }
+        return _results;
+      };
+
+      ImageBox.prototype._backgroundPosition = function() {
+        var bp, e, _i, _len, _results;
+        bp = this.$image.css('background-position').split(' ');
+        _results = [];
+        for (_i = 0, _len = bp.length; _i < _len; _i++) {
+          e = bp[_i];
+          _results.push(Number(e.replace('px', '')));
+        }
+        return _results;
+      };
+
       ImageBox.prototype._events = function() {
         var self;
         self = this;
         this.$image.on('mousewheel', function(e) {
-          var h, pos, scaling, w, wh;
+          var h, pos, scaling, w;
           pos = Math.round(e.originalEvent.wheelDelta);
           if (pos > 0) {
             scaling = pos / 100;
           } else {
             scaling = pos / -200;
           }
-          wh = $(this).css('background-size').split(' ');
-          w = Number(wh[0].replace('px', '')) * scaling;
-          h = Number(wh[1].replace('px', '')) * scaling;
+          w = self._backgroundSize()[0] * scaling;
+          h = self._backgroundSize()[1] * scaling;
           return $(this).css('background-size', "" + w + "px " + h + "px");
         });
         this.$image.on('dblclick', function(e) {
@@ -47,12 +68,9 @@
           return self.resize(self.stockHeight, self.stockWidth);
         });
         return this.$image.on('mousedown', function(e) {
-          var curX, curY, destroy, handler, xy;
-          curX = e.pageX;
-          curY = e.pageY;
-          xy = self.$image.css('background-position').split(' ');
-          curX = curX - Number(xy[0].replace('px', ''));
-          curY = curY - Number(xy[1].replace('px', ''));
+          var curX, curY, destroy, handler;
+          curX = e.pageX - self._backgroundPosition()[0];
+          curY = e.pageY - self._backgroundPosition()[1];
           handler = function(e) {
             var x, y;
             if (e.type !== 'mouseup') {
@@ -116,24 +134,19 @@
       };
 
       ImageBox.prototype.getXY = function() {
-        var coords, elemH, elemW, h, imageX, imageY, w, wh, xy;
-        xy = this.$image.css('background-position').split(' ');
-        imageX = Number(xy[0].replace('px', ''));
-        imageY = Number(xy[1].replace('px', ''));
-        wh = this.$image.css('background-size').split(' ');
-        w = Number(wh[0].replace('px', ''));
-        h = Number(wh[1].replace('px', ''));
+        var coords, elemH, elemW, imageX, imageY;
+        imageX = this._backgroundPosition()[0];
+        imageY = this._backgroundPosition()[1];
         elemH = this.element.height();
         elemW = this.element.width();
-        coords = {
-          "W": w,
-          "H": h,
+        return coords = {
+          "W": this._backgroundSize()[0],
+          "H": this._backgroundSize()[1],
           "X1": -1 * imageX,
           "X2": elemW + imageX,
           "Y1": -1 * imageX,
           "Y2": elemH + imageY
         };
-        return coords;
       };
 
       ImageBox.prototype.clearImage = function() {

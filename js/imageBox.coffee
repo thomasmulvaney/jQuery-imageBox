@@ -27,6 +27,14 @@
     #
     # Private methods
     #
+    _backgroundSize: ->
+      bs = @$image.css('background-size').split(' ')
+      (Number(e.replace('px','')) for e in bs)
+
+    _backgroundPosition: ->
+      bp = @$image.css('background-position').split(' ')
+      (Number(e.replace('px','')) for e in bp)
+
     _events: ->
       self = this
 
@@ -39,10 +47,8 @@
         else
           scaling = pos / -200
 
-        wh = $(this).css('background-size').split(' ')
-        w = Number(wh[0].replace('px','')) * scaling
-        h = Number(wh[1].replace('px','')) * scaling
-
+        w = self._backgroundSize()[0] * scaling
+        h = self._backgroundSize()[1] * scaling
         $(this).css('background-size', "#{w}px #{h}px")
 
       # Reset image position/size on double click
@@ -52,11 +58,8 @@
 
       # Move the image on mousedown drag
       @$image.on 'mousedown', (e) ->
-        curX = e.pageX
-        curY = e.pageY
-        xy = self.$image.css('background-position').split(' ')
-        curX = curX - Number(xy[0].replace('px',''))
-        curY = curY - Number(xy[1].replace('px',''))
+        curX = e.pageX - self._backgroundPosition()[0] 
+        curY = e.pageY - self._backgroundPosition()[1] 
 
         handler = (e) ->
           unless e.type is 'mouseup'
@@ -125,25 +128,18 @@
     # Gets the X1, Y1, X2, Y2 co-ords
     # This is garbage right now :(
     getXY: ->
-      xy = @$image.css('background-position').split(' ')
-      imageX = Number(xy[0].replace('px',''))
-      imageY = Number(xy[1].replace('px',''))
-
-      wh = @$image.css('background-size').split(' ')
-      w = Number(wh[0].replace('px',''))
-      h = Number(wh[1].replace('px',''))
-
+      imageX = @_backgroundPosition()[0] 
+      imageY = @_backgroundPosition()[1] 
       elemH = @element.height()
       elemW = @element.width()
 
       coords =
-        "W":  w 
-        "H":  h
+        "W":  @_backgroundSize()[0]
+        "H":  @_backgroundSize()[1]
         "X1": (-1 * imageX)
         "X2": (elemW + imageX)
         "Y1": (-1 * imageX) 
         "Y2": (elemH + imageY) 
-      return coords
 
     # Clears the current image from canvas
     clearImage: ->
