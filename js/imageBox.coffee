@@ -76,6 +76,7 @@
         self.$image.on 'mouseleave', destroy
       
     constructor: (@element, options) ->
+      options = options or {}
       # Setup options 
       @stretchToCanvas = options.stretchToCanvas or true 
       @stockHeight = @element.height()
