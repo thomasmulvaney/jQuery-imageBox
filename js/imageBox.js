@@ -91,6 +91,7 @@
 
       function ImageBox(element, options) {
         this.element = element;
+        options = options || {};
         this.stretchToCanvas = options.stretchToCanvas || true;
         this.stockHeight = this.element.height();
         this.stockWidth = this.element.width();
