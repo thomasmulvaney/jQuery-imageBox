@@ -48,6 +48,43 @@
         return _results;
       };
 
+      ImageBox.prototype._withinBoundsN = function(imageN, elemN, pos) {
+        var maxMove, n;
+        maxMove = elemN - imageN;
+        if (pos >= 0) {
+          return n = 0;
+        } else if (pos <= maxMove) {
+          return n = maxMove;
+        } else {
+          return n = pos;
+        }
+      };
+
+      ImageBox.prototype._withinBoundsX = function(x) {
+        var eWidth, imgWidth, n;
+        imgWidth = this._backgroundSize()[0];
+        eWidth = this.element.width();
+        n = this._withinBoundsN(imgWidth, eWidth, x);
+        console.log("BoundsX " + x + " -> " + n + " : Size " + imgWidth + " Elm " + eWidth);
+        return n;
+      };
+
+      ImageBox.prototype._withinBoundsY = function(y) {
+        var eHeight, imgHeight, n;
+        imgHeight = this._backgroundSize()[1];
+        eHeight = this.element.height();
+        n = this._withinBoundsN(imgHeight, eHeight, y);
+        console.log("BoundsY " + y + " -> " + n + " : Img " + imgHeight + " Elm " + eHeight);
+        return n;
+      };
+
+      ImageBox.prototype._move = function(dx, dy) {
+        var x, y;
+        x = Math.ceil(this._withinBoundsX(dx));
+        y = Math.ceil(this._withinBoundsY(dy));
+        return this.$image.css('background-position', "" + x + "px " + y + "px");
+      };
+
       ImageBox.prototype._events = function() {
         var self;
         self = this;
@@ -65,18 +102,15 @@
         });
         this.$image.on('dblclick', function(e) {
           self.$image.css('background-position', '0px 0px');
-          return self.resize(self.stockHeight, self.stockWidth);
+          return self.zoomFit();
         });
         return this.$image.on('mousedown', function(e) {
           var curX, curY, destroy, handler;
           curX = e.pageX - self._backgroundPosition()[0];
           curY = e.pageY - self._backgroundPosition()[1];
           handler = function(e) {
-            var x, y;
             if (e.type !== 'mouseup') {
-              x = Math.ceil(e.pageX - curX);
-              y = Math.ceil(e.pageY - curY);
-              return $(this).css('background-position', "" + x + "px " + y + "px");
+              return self._move(e.pageX - curX, e.pageY - curY);
             } else {
               return destroy();
             }
@@ -93,6 +127,7 @@
         this.element = element;
         options = options || {};
         this.stretchToCanvas = options.stretchToCanvas || true;
+        this.superZoom = options.superZoom || false;
         this.stockHeight = this.element.height();
         this.stockWidth = this.element.width();
         this.image = document.createElement('div');
@@ -111,27 +146,52 @@
           self.$image.css('cursor', 'move');
           self.stockHeight = this.height;
           self.stockWidth = this.width;
-          self.resize(this.height, this.width);
+          self.stockRatio = Math.min(this.width / self.element.width(), this.height / self.element.height());
+          self.zoomFit();
           return _image = null;
         });
         return _image.src = img;
       };
 
+      ImageBox.prototype.zoomFit = function() {
+        var h, scaleFactor, w;
+        if (this.stretchToCanvas) {
+          scaleFactor = 1.0 / this.stockRatio;
+          w = this.stockWidth * scaleFactor;
+          h = this.stockHeight * scaleFactor;
+          return this.$image.css('background-size', "" + w + "px  " + h + "px");
+        }
+      };
+
       ImageBox.prototype.resize = function(height, width) {
-        var eHeight, eWidth, h, w;
+        var eHeight, eWidth, h, hRatio, minRatio, scaleFactor, w, wRatio;
         eWidth = this.element.width();
         eHeight = this.element.height();
-        if (width <= eWidth && this.stretchToCanvas) {
-          w = eWidth;
+        if (this.stretchToCanvas) {
+          eWidth = this.element.width();
+          eHeight = this.element.height();
+          wRatio = width / eWidth;
+          hRatio = height / eHeight;
+          minRatio = Math.min(wRatio, hRatio);
+          if (minRatio < 1.0) {
+            scaleFactor = 1.0 / minRatio;
+          } else {
+            scaleFactor = 1.0;
+          }
+          w = width * scaleFactor;
+          h = height * scaleFactor;
+          if (!this.superZoom) {
+            if (this.stockRatio < 1.0) {
+              return this.zoomFit();
+            } else {
+              w = Math.min(this.stockWidth, w);
+              h = Math.min(this.stockHeight, h);
+              return this.$image.css('background-size', "" + w + "px  " + h + "px");
+            }
+          }
         } else {
-          w = width;
+          return this.$image.css('background-size', "" + width + "px  " + height + "px");
         }
-        if (height <= eHeight && this.stretchToCanvas) {
-          h = eHeight;
-        } else {
-          h = height;
-        }
-        return this.$image.css('background-size', "" + w + "px  " + h + "px");
       };
 
       ImageBox.prototype.getXY = function() {
