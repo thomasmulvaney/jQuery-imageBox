@@ -5,7 +5,7 @@
 # Updated: March 14, 2014
 #
 
-(($, window) ->
+((window) ->
   $.fn.extend 'imageBox': (option, args) ->
     funk = ($e) -> 
       data = $e.data('imageBox')
@@ -154,4 +154,4 @@
       @$image.css('background-repeat', 'no-repeat no-repeat')
       @$image.css('border', 'none')
 
-)(window.jQuery, window)
+)(window)
