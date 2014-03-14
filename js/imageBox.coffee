@@ -1,5 +1,5 @@
 #
-# imageBox, a notification plugin for jQuery
+# imageBox, a plugin for jQuery
 # Instructions: https://github.com/wavejumper/jQuery-imageBox 
 # By: Thomas Crowley
 # Updated: March 14, 2014
