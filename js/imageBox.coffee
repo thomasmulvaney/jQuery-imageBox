@@ -1,3 +1,10 @@
+#
+# imageBox, a notification plugin for jQuery
+# Instructions: https://github.com/wavejumper/jQuery-imageBox 
+# By: Thomas Crowley
+# Updated: March 14, 2014
+#
+
 (($, window) ->
   $.fn.extend 'imageBox': (option, args) ->
     funk = ($e) -> 
@@ -9,15 +16,22 @@
         data[option].apply(data, args)
 
     if @length is 1
-      funk $(this)
+      # so we can return the result of the function
+      # if there is just one element
+      funk $(this) 
     else
       @each ->
         funk $(this)
 
   class ImageBox
+    #
+    # Private methods
+    #
     _events: ->
       self = this
 
+      # Resize image on mousewheel
+      # The scaling sucks right now
       @$image.on 'mousewheel', (e) ->
         pos = Math.round(e.originalEvent.wheelDelta)
         if pos > 0
@@ -31,11 +45,12 @@
 
         $(this).css('background-size', "#{w}px #{h}px")
 
-
+      # Reset image position/size on double click
       @$image.on 'dblclick', (e) ->
         self.$image.css('background-position', '0px 0px')
         self.resize(self.stockHeight, self.stockWidth)
 
+      # Move the image on mousedown drag
       @$image.on 'mousedown', (e) ->
         curX = e.pageX
         curY = e.pageY
@@ -72,16 +87,20 @@
       # Init events
       @_events()
 
-    # Sets image src
+    #
+    # Public methods
+    #
+    # Sets image 'src' attribute
     setImage: (img) ->
       self = this
-      @$image.css('cursor', 'move')
+
       _image = new Image()
       _image.addEventListener 'load', ->
         self.$image.css('background-image', "url('#{img}')")
-        self.resize(this.height, this.width)
+        self.$image.css('cursor', 'move')
         self.stockHeight = this.height
         self.stockWidth = this.width
+        self.resize(this.height, this.width)
         _image = null
 
       _image.src = img
@@ -103,7 +122,7 @@
 
       @$image.css('background-size', "#{w}px  #{h}px")
 
-    # This gets the X1, Y1, X2, Y2 co-ords
+    # Gets the X1, Y1, X2, Y2 co-ords
     # This is garbage right now :(
     getXY: ->
       xy = @$image.css('background-position').split(' ')
@@ -126,7 +145,7 @@
         "Y2": (elemH + imageY) 
       return coords
 
-    # Clears the current image from the canvas
+    # Clears the current image from canvas
     clearImage: ->
       @$image.css('background-position', "0px 0px")
       @$image.css('background-image', 'none')

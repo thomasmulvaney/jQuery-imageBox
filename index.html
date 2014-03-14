@@ -1,13 +1,11 @@
 <html>
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="src/script.js"></script>
+    <script src="js/imageBox.js"></script>
     <script>
       $('document').ready(function() {
-        $('#box').imageBox({fileInput: $('input[name=my_file2]')});
-        //$('#box').imageBox('add')
-
-        var fileInput = $('input[name=my_file2]');
+        $('#box').imageBox({fileInput: $('input[name=my_file]')});
+        var fileInput = $('input[name=my_file]');
 
         fileInput.on('change', function(e) {
           reader = new FileReader()
@@ -27,11 +25,8 @@
             xy = $('#box').imageBox('getXY');
             console.log(xy);
         });
-
       });
-
     </script>
-
     <style>
       #box {
         height: 400px;
@@ -42,9 +37,8 @@
     </style>
   </head>
     <h1>Demo</h1>
-
     <form>
-      <input type="file" name="my_file2" accept="image/*" capture="camera" />
+      <input type="file" name="my_file" accept="image/*" capture="camera" />
     </form>
     <div id="box">
     </div>

@@ -86,13 +86,13 @@
       ImageBox.prototype.setImage = function(img) {
         var self, _image;
         self = this;
-        this.$image.css('cursor', 'move');
         _image = new Image();
         _image.addEventListener('load', function() {
           self.$image.css('background-image', "url('" + img + "')");
-          self.resize(this.height, this.width);
+          self.$image.css('cursor', 'move');
           self.stockHeight = this.height;
           self.stockWidth = this.width;
+          self.resize(this.height, this.width);
           return _image = null;
         });
         return _image.src = img;
