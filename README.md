@@ -3,9 +3,11 @@
 jQuery plugin.
 
 ## Demo
+
 [http://wavejumper.github.io/jQuery-imageBox/](http://wavejumper.github.io/jQuery-imageBox/)
 
 ## Usage
+
 ```$('#box').imageBox(options)```
 
 ## Options
