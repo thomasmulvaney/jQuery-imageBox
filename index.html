@@ -1,0 +1,54 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="src/script.js"></script>
+    <script>
+      $('document').ready(function() {
+        $('#box').imageBox({fileInput: $('input[name=my_file2]')});
+        //$('#box').imageBox('add')
+
+        var fileInput = $('input[name=my_file2]');
+
+        fileInput.on('change', function(e) {
+          reader = new FileReader()
+          reader.onloadend = function() {
+            $('#box').imageBox('setImage', reader.result);
+          }
+          reader.readAsDataURL(this.files[0])
+        });
+
+        $('#box').imageBox('setImage', 'http://www.coolanimalworld.com/wp-content/uploads/2012/09/How-to-choose-a-healthy-dog-2.jpg');
+
+        $('.clear').on('click', function() {
+          $('#box').imageBox('clearImage');
+        });
+
+        $('.draw').on('click', function() {
+            xy = $('#box').imageBox('getXY');
+            console.log(xy);
+        });
+
+      });
+
+    </script>
+
+    <style>
+      #box {
+        height: 400px;
+        width: 300px;
+        overflow: hidden;
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+    <h1>Demo</h1>
+
+    <form>
+      <input type="file" name="my_file2" accept="image/*" capture="camera" />
+    </form>
+    <div id="box">
+    </div>
+    <div class="clear">Clear Box</div>
+    <div class="draw">XY</div>
+  </body>
+</html>
