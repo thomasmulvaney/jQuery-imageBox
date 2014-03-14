@@ -9,6 +9,7 @@ jQuery plugin.
 ```$('#box').imageBox(options)```
 
 ## Options
+
 | Name | type | default | description |
 | ---- | ----| -------- | ----------- |
 | stretchToCanvas | boolean | true | If the image is smaller than the imageBox, the image will be stretched to fit the parent container |
