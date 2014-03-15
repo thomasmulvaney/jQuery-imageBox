@@ -75,9 +75,9 @@
       };
 
       ImageBox.prototype._events = function() {
-        var self;
+        var mousewheelEvent, self;
         self = this;
-        this.$image.on('mousewheel', function(e) {
+        mousewheelEvent = function(e) {
           var curX, curY, h, pos, scaling, w, x, y;
           pos = Math.round(e.originalEvent.wheelDelta);
           if (pos > 0) {
@@ -93,7 +93,12 @@
           x = curX - self._backgroundPosition()[0];
           y = curY - self._backgroundPosition()[1];
           return self.move(x, y);
-        });
+        };
+        if (this.$image.mousewheel) {
+          this.$image.mousewheel(mousewheelEvent);
+        } else {
+          this.$image.on('mousewheel', mousewheelEvent);
+        }
         this.$image.on('dblclick', function(e) {
           self.$image.css('background-position', '0px 0px');
           return self.zoomFit();

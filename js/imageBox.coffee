@@ -58,7 +58,7 @@
       self = this
 
       # Resize image on mousewheel
-      @$image.on 'mousewheel', (e) ->
+      mousewheelEvent = (e) ->
         pos = Math.round(e.originalEvent.wheelDelta)
         if pos > 0
           scaling = pos / 100
@@ -77,6 +77,12 @@
         x = curX - self._backgroundPosition()[0]
         y = curY - self._backgroundPosition()[1]
         self.move(x, y)
+
+      # Attempt to use the jQuery mousehweel plugin
+      if @$image.mousewheel
+        @$image.mousewheel mousewheelEvent
+      else
+        @$image.on 'mousewheel', mousewheelEvent
 
       # Reset image position/size on double click
       @$image.on 'dblclick', (e) ->
