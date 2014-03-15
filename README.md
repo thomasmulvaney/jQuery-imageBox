@@ -13,7 +13,7 @@ Optionally, you can use [jquery-mousewheel](https://github.com/brandonaaron/jque
 
 [http://wavejumper.github.io/jQuery-imageBox/](http://wavejumper.github.io/jQuery-imageBox/)
 
-## TODO:
+## TODO
 
 * Write tests
 
