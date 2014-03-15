@@ -4,9 +4,9 @@ jQuery plugin.
 
 ## Requirements
 
-* (jQuery >= 1.7.1)[http://jquery.com/]
+* [jQuery >= 1.7.1](http://jquery.com/)
 
-Optionally, you can use (jquery-mousewheel)[https://github.com/brandonaaron/jquery-mousewheel]
+Optionally, you can use [jquery-mousewheel](https://github.com/brandonaaron/jquery-mousewheel)
 
 
 ## Demo
