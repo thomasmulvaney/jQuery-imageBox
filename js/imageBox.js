@@ -64,18 +64,14 @@
         var eWidth, imgWidth, n;
         imgWidth = this._backgroundSize()[0];
         eWidth = this.element.width();
-        n = this._withinBoundsN(imgWidth, eWidth, x);
-        console.log("BoundsX " + x + " -> " + n + " : Size " + imgWidth + " Elm " + eWidth);
-        return n;
+        return n = this._withinBoundsN(imgWidth, eWidth, x);
       };
 
       ImageBox.prototype._withinBoundsY = function(y) {
         var eHeight, imgHeight, n;
         imgHeight = this._backgroundSize()[1];
         eHeight = this.element.height();
-        n = this._withinBoundsN(imgHeight, eHeight, y);
-        console.log("BoundsY " + y + " -> " + n + " : Img " + imgHeight + " Elm " + eHeight);
-        return n;
+        return n = this._withinBoundsN(imgHeight, eHeight, y);
       };
 
       ImageBox.prototype._move = function(dx, dy) {
@@ -89,16 +85,21 @@
         var self;
         self = this;
         this.$image.on('mousewheel', function(e) {
-          var h, pos, scaling, w;
+          var curX, curY, h, pos, scaling, w, x, y;
           pos = Math.round(e.originalEvent.wheelDelta);
           if (pos > 0) {
             scaling = pos / 100;
           } else {
             scaling = pos / -200;
           }
+          curX = e.originalEvent.pageX - self._backgroundPosition()[0];
+          curY = e.originalEvent.pageY - self._backgroundPosition()[1];
           w = self._backgroundSize()[0] * scaling;
           h = self._backgroundSize()[1] * scaling;
-          return self.resize(h, w);
+          self.resize(h, w);
+          x = curX - self._backgroundPosition()[0];
+          y = curY - self._backgroundPosition()[1];
+          return self._move(x, y);
         });
         this.$image.on('dblclick', function(e) {
           self.$image.css('background-position', '0px 0px');

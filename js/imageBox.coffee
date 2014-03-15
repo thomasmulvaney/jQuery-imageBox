@@ -48,15 +48,11 @@
       imgWidth  = @_backgroundSize()[0]
       eWidth = @element.width()
       n = @_withinBoundsN imgWidth, eWidth, x
-      console.log "BoundsX #{x} -> #{n} : Size #{imgWidth} Elm #{eWidth}"
-      n
 
     _withinBoundsY: (y) ->
       imgHeight  = @_backgroundSize()[1]
       eHeight = @element.height()
       n = @_withinBoundsN imgHeight, eHeight, y
-      console.log "BoundsY #{y} -> #{n} : Img #{imgHeight} Elm #{eHeight}"
-      n
 
     # Move the image in the element, aka panning
     _move: (dx, dy) ->
@@ -76,13 +72,18 @@
         else
           scaling = pos / -200
 
+        curX = e.originalEvent.pageX - self._backgroundPosition()[0]
+        curY = e.originalEvent.pageY - self._backgroundPosition()[1]
+
+        # Resize
         w = self._backgroundSize()[0] * scaling
         h = self._backgroundSize()[1] * scaling
-
         self.resize(h, w)
 
-        # We need to pan inorder to zoom into the mouse center
-        #self._move ?, ?
+        # Pan
+        x = curX - self._backgroundPosition()[0]
+        y = curY - self._backgroundPosition()[1]
+        self._move(x, y)
 
       # Reset image position/size on double click
       @$image.on 'dblclick', (e) ->
