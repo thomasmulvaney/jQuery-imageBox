@@ -35,6 +35,35 @@
       bp = @$image.css('background-position').split(' ')
       (Number(e.replace('px','')) for e in bp)
 
+    _withinBoundsN: (imageN, elemN, pos) ->
+      maxMove = elemN - imageN
+      if pos >= 0
+        n = 0
+      else if pos <= maxMove
+        n = maxMove
+      else
+        n = pos
+
+    _withinBoundsX: (x) ->
+      imgWidth  = @_backgroundSize()[0]
+      eWidth = @element.width()
+      n = @_withinBoundsN imgWidth, eWidth, x
+      console.log "BoundsX #{x} -> #{n} : Size #{imgWidth} Elm #{eWidth}"
+      n
+
+    _withinBoundsY: (y) ->
+      imgHeight  = @_backgroundSize()[1]
+      eHeight = @element.height()
+      n = @_withinBoundsN imgHeight, eHeight, y
+      console.log "BoundsY #{y} -> #{n} : Img #{imgHeight} Elm #{eHeight}"
+      n
+
+    # Move the image in the element, aka panning
+    _move: (dx, dy) ->
+      x = Math.ceil @_withinBoundsX dx
+      y = Math.ceil @_withinBoundsY dy
+      @$image.css('background-position', "#{x}px #{y}px")
+
     _events: ->
       self = this
 
@@ -49,23 +78,24 @@
 
         w = self._backgroundSize()[0] * scaling
         h = self._backgroundSize()[1] * scaling
+
         self.resize(h, w)
+
+        # We need to pan inorder to zoom into the mouse center
+        #self._move ?, ?
 
       # Reset image position/size on double click
       @$image.on 'dblclick', (e) ->
         self.$image.css('background-position', '0px 0px')
-        self.resize(self.stockHeight, self.stockWidth)
+        self.zoomFit()
 
       # Move the image on mousedown drag
       @$image.on 'mousedown', (e) ->
         curX = e.pageX - self._backgroundPosition()[0]
         curY = e.pageY - self._backgroundPosition()[1]
-
         handler = (e) ->
           unless e.type is 'mouseup'
-            x = Math.ceil(e.pageX - curX)
-            y = Math.ceil(e.pageY - curY)
-            $(this).css('background-position', "#{x}px #{y}px")
+            self._move (e.pageX - curX), (e.pageY - curY)
           else
             destroy()
 
@@ -79,9 +109,9 @@
       options = options or {}
       # Setup options
       @stretchToCanvas = options.stretchToCanvas or true
+      @superZoom       = options.superZoom or false
       @stockHeight = @element.height()
       @stockWidth  = @element.width()
-
       # Initialize image to dom
       @image = document.createElement('div')
       @$image = $(@image)
@@ -104,13 +134,27 @@
         self.$image.css('cursor', 'move')
         self.stockHeight = this.height
         self.stockWidth = this.width
-        self.resize(this.height, this.width)
+        self.stockRatio =
+          Math.min (this.width/self.element.width()),
+                   (this.height/self.element.height())
+        self.zoomFit()
         _image = null
-
       _image.src = img
+
+    zoomFit: () ->
+      if @stretchToCanvas
+        scaleFactor = 1.0 / @stockRatio
+
+        w = @stockWidth * scaleFactor
+        h = @stockHeight * scaleFactor
+
+        @$image.css('background-size', "#{w}px  #{h}px")
 
     # Resize the image
     resize: (height, width) ->
+      eWidth = @element.width()
+      eHeight = @element.height()
+
       if @stretchToCanvas
         # Given the dimensions of the canvas, if the image is
         # smaller than either or both dimensions we need to scale
@@ -120,11 +164,28 @@
         wRatio = width/eWidth
         hRatio = height/eHeight
         minRatio = Math.min wRatio, hRatio
-        scaleFactor = 1.0 / minRatio
-        width = width * scaleFactor
-        height = height * scaleFactor
 
-      @$image.css('background-size', "#{width}px  #{height}px")
+        if minRatio < 1.0
+          scaleFactor = 1.0 / minRatio
+        else
+          scaleFactor = 1.0
+
+        w = width * scaleFactor
+        h = height * scaleFactor
+
+        unless @superZoom
+          # If one or more dimensions is smaller than the element we have no
+          # choice but to upscale the minimum dimension.
+          if @stockRatio < 1.0
+            @zoomFit()
+          else
+            w = Math.min @stockWidth,  w
+            h = Math.min @stockHeight, h
+            @$image.css('background-size', "#{w}px  #{h}px")
+
+      else
+        @$image.css('background-size', "#{width}px  #{height}px")
+
 
     # Gets the X1, Y1, X2, Y2 co-ords
     # This is garbage right now :(
