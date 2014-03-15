@@ -1,8 +1,8 @@
 #
 # imageBox, a plugin for jQuery
 # Instructions: https://github.com/wavejumper/jQuery-imageBox
-# By: Thomas Crowley
-# Updated: March 14, 2014
+# By: Thomas Crowley, Thomas Mulvaney
+# Updated: March 15, 2014
 #
 
 ((window) ->
@@ -47,24 +47,17 @@
     _withinBoundsX: (x) ->
       imgWidth  = @_backgroundSize()[0]
       eWidth = @element.width()
-      n = @_withinBoundsN imgWidth, eWidth, x
+      @_withinBoundsN imgWidth, eWidth, x
 
     _withinBoundsY: (y) ->
       imgHeight  = @_backgroundSize()[1]
       eHeight = @element.height()
-      n = @_withinBoundsN imgHeight, eHeight, y
-
-    # Move the image in the element, aka panning
-    _move: (dx, dy) ->
-      x = Math.ceil @_withinBoundsX dx
-      y = Math.ceil @_withinBoundsY dy
-      @$image.css('background-position', "#{x}px #{y}px")
+      @_withinBoundsN imgHeight, eHeight, y
 
     _events: ->
       self = this
 
       # Resize image on mousewheel
-      # The scaling sucks right now
       @$image.on 'mousewheel', (e) ->
         pos = Math.round(e.originalEvent.wheelDelta)
         if pos > 0
@@ -83,7 +76,7 @@
         # Pan
         x = curX - self._backgroundPosition()[0]
         y = curY - self._backgroundPosition()[1]
-        self._move(x, y)
+        self.move(x, y)
 
       # Reset image position/size on double click
       @$image.on 'dblclick', (e) ->
@@ -96,7 +89,7 @@
         curY = e.pageY - self._backgroundPosition()[1]
         handler = (e) ->
           unless e.type is 'mouseup'
-            self._move (e.pageX - curX), (e.pageY - curY)
+            self.move (e.pageX - curX), (e.pageY - curY)
           else
             destroy()
 
@@ -153,10 +146,9 @@
 
     # Resize the image
     resize: (height, width) ->
-      eWidth = @element.width()
-      eHeight = @element.height()
-
-      if @stretchToCanvas
+      unless @stretchToCanvas
+        @$image.css('background-size', "#{width}px  #{height}px")
+      else
         # Given the dimensions of the canvas, if the image is
         # smaller than either or both dimensions we need to scale
         # it so it fits both.
@@ -184,9 +176,11 @@
             h = Math.min @stockHeight, h
             @$image.css('background-size', "#{w}px  #{h}px")
 
-      else
-        @$image.css('background-size', "#{width}px  #{height}px")
-
+    # Move the image in the element, aka panning
+    move: (dx, dy) ->
+      x = Math.ceil @_withinBoundsX dx
+      y = Math.ceil @_withinBoundsY dy
+      @$image.css('background-position', "#{x}px #{y}px")
 
     # Gets the X1, Y1, X2, Y2 co-ords
     # This is garbage right now :(

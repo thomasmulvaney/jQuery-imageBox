@@ -61,24 +61,17 @@
       };
 
       ImageBox.prototype._withinBoundsX = function(x) {
-        var eWidth, imgWidth, n;
+        var eWidth, imgWidth;
         imgWidth = this._backgroundSize()[0];
         eWidth = this.element.width();
-        return n = this._withinBoundsN(imgWidth, eWidth, x);
+        return this._withinBoundsN(imgWidth, eWidth, x);
       };
 
       ImageBox.prototype._withinBoundsY = function(y) {
-        var eHeight, imgHeight, n;
+        var eHeight, imgHeight;
         imgHeight = this._backgroundSize()[1];
         eHeight = this.element.height();
-        return n = this._withinBoundsN(imgHeight, eHeight, y);
-      };
-
-      ImageBox.prototype._move = function(dx, dy) {
-        var x, y;
-        x = Math.ceil(this._withinBoundsX(dx));
-        y = Math.ceil(this._withinBoundsY(dy));
-        return this.$image.css('background-position', "" + x + "px " + y + "px");
+        return this._withinBoundsN(imgHeight, eHeight, y);
       };
 
       ImageBox.prototype._events = function() {
@@ -99,7 +92,7 @@
           self.resize(h, w);
           x = curX - self._backgroundPosition()[0];
           y = curY - self._backgroundPosition()[1];
-          return self._move(x, y);
+          return self.move(x, y);
         });
         this.$image.on('dblclick', function(e) {
           self.$image.css('background-position', '0px 0px');
@@ -111,7 +104,7 @@
           curY = e.pageY - self._backgroundPosition()[1];
           handler = function(e) {
             if (e.type !== 'mouseup') {
-              return self._move(e.pageX - curX, e.pageY - curY);
+              return self.move(e.pageX - curX, e.pageY - curY);
             } else {
               return destroy();
             }
@@ -166,9 +159,9 @@
 
       ImageBox.prototype.resize = function(height, width) {
         var eHeight, eWidth, h, hRatio, minRatio, scaleFactor, w, wRatio;
-        eWidth = this.element.width();
-        eHeight = this.element.height();
-        if (this.stretchToCanvas) {
+        if (!this.stretchToCanvas) {
+          return this.$image.css('background-size', "" + width + "px  " + height + "px");
+        } else {
           eWidth = this.element.width();
           eHeight = this.element.height();
           wRatio = width / eWidth;
@@ -190,9 +183,14 @@
               return this.$image.css('background-size', "" + w + "px  " + h + "px");
             }
           }
-        } else {
-          return this.$image.css('background-size', "" + width + "px  " + height + "px");
         }
+      };
+
+      ImageBox.prototype.move = function(dx, dy) {
+        var x, y;
+        x = Math.ceil(this._withinBoundsX(dx));
+        y = Math.ceil(this._withinBoundsY(dy));
+        return this.$image.css('background-position', "" + x + "px " + y + "px");
       };
 
       ImageBox.prototype.getXY = function() {
