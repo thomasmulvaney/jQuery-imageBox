@@ -126,6 +126,8 @@
       # Init events
       @_events()
 
+      @trigger "init"
+
     #
     # Public methods
     #
@@ -177,7 +179,7 @@
         unless @superZoom
           # If one or more dimensions is smaller than the element we have no
           # choice but to upscale the minimum dimension.
-          if @stockRatio < 1.0
+          if @stockRatio() < 1.0
             @zoomFit()
           else
             w = Math.min @stockWidth,  w
