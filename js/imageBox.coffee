@@ -126,8 +126,6 @@
       # Init events
       @_events()
 
-      @trigger "init"
-
     #
     # Public methods
     #
@@ -144,6 +142,7 @@
         self.zoomFit()
         _image = null
       _image.src = img
+      @element.trigger "setImage"
 
     zoomFit: () ->
       if @stretchToCanvas
