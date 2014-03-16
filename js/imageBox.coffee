@@ -54,6 +54,11 @@
       eHeight = @element.height()
       @_withinBoundsN imgHeight, eHeight, y
 
+    # Must be dynamic because element width may change
+    _stockRatio: ->
+      Math.min @stockHeight/@element.height(),
+               @stockWidth/@element.width()
+
     _events: ->
       self = this
 
@@ -134,16 +139,13 @@
         self.$image.css('cursor', 'move')
         self.stockHeight = this.height
         self.stockWidth = this.width
-        self.stockRatio =
-          Math.min (this.width/self.element.width()),
-                   (this.height/self.element.height())
         self.zoomFit()
         _image = null
       _image.src = img
 
     zoomFit: () ->
       if @stretchToCanvas
-        scaleFactor = 1.0 / @stockRatio
+        scaleFactor = 1.0 / @_stockRatio()
 
         w = @stockWidth * scaleFactor
         h = @stockHeight * scaleFactor
